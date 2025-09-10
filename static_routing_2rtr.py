@@ -36,7 +36,7 @@ class LinuxRouter( Node ):
 
 def run():
     privateDirs = [ ( '/var/log' ),
-                    ( '/etc/frr', '/home/ubuntu/net101/frr-config/%(name)s'),
+                    ( '/etc/frr', './frr-config/%(name)s'),
                     ( '/var/run' ),
                       '/var/mn' ]
 

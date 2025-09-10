@@ -34,6 +34,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     python3 \
     python3-pip \
     python-is-python3 \
+    python3-termcolor \
     sudo \
     lsb-release \
     ca-certificates \
@@ -42,6 +43,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     iproute2 \
     iputils-ping \
     net-tools \
+    bridge-utils \
     tcpdump \
     frr \
     traceroute \
