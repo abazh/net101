@@ -1,0 +1,27 @@
+services:
+  mininet:
+    image: mininet-ubuntu-24.04:latest
+    container_name: mininet
+    privileged: true
+    stdin_open: true
+    tty: true
+    network_mode: "host"
+    hostname: "mininet"
+    
+    cap_add:
+      - NET_ADMIN
+      - SYS_ADMIN
+
+    extra_hosts:
+      mininet: "127.0.1.1"
+      host.docker.internal: "host-gateway"
+
+    volumes:
+      - /lib/modules:/lib/modules:ro
+      - ./:/home/ubuntu/net101
+    
+    environment:
+      - MININET_DOCKER=true
+      - PYTHONUNBUFFERED=1
+    
+    restart: unless-stopped  
