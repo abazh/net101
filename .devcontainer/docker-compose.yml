@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  mininet:
+    build:
+      context: ..
+      dockerfile: .devcontainer/Dockerfile
+    
+    container_name: mininet-devcontainer
+    privileged: true
+    stdin_open: true
+    tty: true
+    network_mode: "host"
+    hostname: "mininet-dev"
+    
+    cap_add:
+      - NET_ADMIN
+      - SYS_ADMIN
+
+    extra_hosts:
+      - "mininet-dev:127.0.1.1"
+      - "host.docker.internal:host-gateway"
+
+    volumes:
+      - /lib/modules:/lib/modules:ro
+      - ..:/workspaces/net101:cached
+    
+    environment:
+      - MININET_DOCKER=true
+      - PYTHONUNBUFFERED=1
+    
+    # Override the default command to keep container running
+    command: sleep infinity
+    
+    restart: unless-stopped

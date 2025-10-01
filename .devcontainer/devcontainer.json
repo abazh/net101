@@ -1,0 +1,55 @@
+{
+  "name": "Mininet Network Lab",
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "mininet",
+  "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+  "shutdownAction": "stopCompose",
+
+  // Configure tool-specific properties
+  "customizations": {
+    "vscode": {
+      // Extensions to install
+      "extensions": [
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "ms-azuretools.vscode-docker",
+        "bierner.markdown-mermaid",
+        "yzhang.markdown-all-in-one",
+        "redhat.vscode-yaml"
+      ],
+      // VS Code settings
+      "settings": {
+        "python.defaultInterpreterPath": "/usr/bin/python3",
+        "python.linting.enabled": true,
+        "python.linting.pylintEnabled": false,
+        "python.formatting.provider": "autopep8",
+        "terminal.integrated.defaultProfile.linux": "bash",
+        "files.eol": "\n"
+      }
+    }
+  },
+
+  // Use 'forwardPorts' to make a list of ports inside the container available locally
+  "forwardPorts": [],
+
+  // Use 'postCreateCommand' to run commands after the container is created
+  "postCreateCommand": "echo '127.0.1.1 mininet-dev' | sudo tee -a /etc/hosts && echo 'DevContainer initialized successfully! Mininet is ready to use.'",
+  
+  // Start Open vSwitch after container starts
+  "postStartCommand": "sudo service openvswitch-switch start || true",
+
+  // Comment out to connect as root instead
+  "remoteUser": "root",
+
+  // Set environment variables
+  "containerEnv": {
+    "MININET_DOCKER": "true",
+    "PYTHONUNBUFFERED": "1"
+  },
+
+  // Mount additional volumes (via docker-compose.yml)
+  // Note: privileged mode, network settings, and capabilities are configured in docker-compose.yml
+  
+  // Keep container running
+  "overrideCommand": true
+}
