@@ -37,7 +37,7 @@ class LinuxRouter( Node ):
 		self.cmd( 'killall zebra staticd ospfd ospf6d bgpd pathd pimd pim6d ldpd isisd nhrpd vrrpd fabricd' )
 		super( LinuxRouter, self ).terminate()
 
-class OSPFLab(Topo):
+class BGPLab(Topo):
 	def generate_config(self, router_name, path):
 		""" Generate an empty config for each router.\n
 			path: the path of router configs directory
@@ -207,9 +207,9 @@ class OSPFLab(Topo):
 		super().build(*args, **kwargs)
 
 start = time.time()
-print("This the topology for the OSPF lab")
+print("This the topology for the BGP lab")
 print("="*40)
-net = Mininet(topo=OSPFLab(), switch=LinuxBridge, controller=None)
+net = Mininet(topo=BGPLab(), switch=LinuxBridge, controller=None)
 finish = time.time()
 print("Finished initializing network in:", finish-start, "seconds")
 
