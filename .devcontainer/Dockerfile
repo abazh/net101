@@ -69,6 +69,17 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/* \
     && rm -rf /tmp/* /var/tmp/*
 
+# Install FRR from official repository
+RUN curl -s https://deb.frrouting.org/frr/keys.gpg | sudo tee /usr/share/keyrings/frrouting.gpg > /dev/null
+
+ENV FRRVER="frr-8"
+RUN echo "deb [signed-by=/usr/share/keyrings/frrouting.gpg] https://deb.frrouting.org/frr $(lsb_release -s -c) $FRRVER" \
+    | tee /etc/apt/sources.list.d/frr.list
+RUN apt-get update && apt-get install -y frr frr-pythontools \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* \
+    && rm -rf /tmp/* /var/tmp/*
+
 # Copy Mininet source from builder stage
 COPY --from=builder /opt/mininet /opt/mininet
 
