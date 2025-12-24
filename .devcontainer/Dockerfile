@@ -3,6 +3,8 @@ FROM ubuntu:24.04 AS builder
 
 # Build arguments for flexibility
 ARG MININET_VERSION=master
+ARG DEBIAN_FRONTEND=noninteractive
+ENV DEBIAN_FRONTEND=noninteractive
 
 # Install build dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -19,6 +21,9 @@ RUN git clone --depth 1 --branch ${MININET_VERSION} \
 # Production stage
 FROM ubuntu:24.04
 
+# Prevent services from being started during image build (temporary)
+RUN printf '%s\n' '#!/bin/sh' 'exit 101' > /usr/sbin/policy-rc.d && chmod +x /usr/sbin/policy-rc.d
+
 # Metadata labels
 LABEL org.opencontainers.image.title="Mininet DevContainer" \
       org.opencontainers.image.description="Mininet DevContainer with Linux Ubuntu 24.04" \
@@ -29,6 +34,7 @@ LABEL org.opencontainers.image.title="Mininet DevContainer" \
 
 # Install runtime dependencies in optimized layers
 RUN apt-get update && apt-get install -y --no-install-recommends \
+    apt-utils \
     # Core system packages
     python3 \
     python3-pip \
@@ -91,6 +97,8 @@ RUN cd /opt/mininet && \
     # Apply your Ubuntu 24.04 compatibility fix
     sed -i '181a \
 if [ "$DIST" = "Ubuntu" -a $(echo "$RELEASE >= 24.04" | bc) -eq 1 ]; then\n    pf=pyflakes3\n    pep8=python3-pep8\nfi' util/install.sh && \
+    # If openvswitch-controller package is missing on this platform, install the testcontroller as a safe fallback
+    if ! apt-cache show openvswitch-controller >/dev/null 2>&1; then apt-get install -y --no-install-recommends openvswitch-testcontroller || true; fi && \
     # Install with your working flags
     PYTHON=python3 ./util/install.sh -nv && \
     # Clean up
@@ -101,6 +109,9 @@ if [ "$DIST" = "Ubuntu" -a $(echo "$RELEASE >= 24.04" | bc) -eq 1 ]; then\n    p
 # Copy and set up entrypoint (keeping your working version)
 COPY ../entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
+
+# Remove build-time policy to allow services to start normally at runtime
+RUN rm -f /usr/sbin/policy-rc.d || true
 
 USER root
 WORKDIR /workspaces/net101
